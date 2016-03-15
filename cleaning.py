@@ -110,7 +110,7 @@ def remove_stopwords(html_text):
 
 
 
-def read_book(folder, save=True, output_folder=None, titles_remove=False):
+def read_book(folder, save=True, output_folder=None, notitles=False):
     """Takes a folder of html files and reads them all into one string
 
     Args
@@ -138,7 +138,7 @@ def read_book(folder, save=True, output_folder=None, titles_remove=False):
     for html in html_files:
         text = read_html(html)
 
-        if titles_remove:
+        if notitles:
             clean = remove_stopwords(remove_nonwords(remove_titles(text)))
         else:
             clean = remove_stopwords(remove_nonwords(text))
@@ -157,7 +157,7 @@ def read_book(folder, save=True, output_folder=None, titles_remove=False):
 
     if save:
         x, name = split(folder)
-        if titles_remove:
+        if notitles:
             name = name + "_notitles.txt"
         else:
             name = name + ".txt"
@@ -167,10 +167,10 @@ def read_book(folder, save=True, output_folder=None, titles_remove=False):
 
     return out
 
-def save_all_books(folder, output_folder, titles_remove=False):
+def save_all_books(folder, output_folder, notitles=False):
     """Cleans data and saves as new text files"""
 
     book_list = list_of_books(folder)
 
     for book in book_list:
-        read_book(book, save=True, output_folder=output_folder, titles_remove=titles_remove)
+        read_book(book, save=True, output_folder=output_folder, notitles=titles_remove)
