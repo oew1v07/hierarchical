@@ -4,12 +4,13 @@ import pandas as pd
 from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.manifold import MDS
 from misc import *
 from cleaning import *
 # This function should be unnecessary since
 # Only uses words where it is mentioned in corpus at least 3 times
 
-def BoW(texts, vectorizerType="count", min_df=3, min_ngram=4):
+def BoW(texts, vectorizerType="count", min_df=3):
     """Takes a list of texts and creates a BoWs object
 
     Args
@@ -29,9 +30,9 @@ def BoW(texts, vectorizerType="count", min_df=3, min_ngram=4):
     """
 
     if vectorizerType == "count":
-        CV = CountVectorizer(min_df=min_df, ngram_range=(min_ngram,18))
+        CV = CountVectorizer(min_df=min_df)
     elif vectorizerType == "tfidf":
-        CV = TfidfVectorizer(min_df=min_df, ngram_range=(min_ngram,18))
+        CV = TfidfVectorizer(min_df=min_df)
 
     BoWs = CV.fit_transform(texts)
 
@@ -58,6 +59,7 @@ def vocab_size(texts, min_count=[1,2,3,4,5], visualise=False, save=False):
         sizes.append(BoWs.shape[1])
 
     if visualise:
+        plt.clf()
         plt.plot(min_count, sizes, 'bo-')
         if save:
             plt.savefig("Count_vs_vocabSize.png")
@@ -65,7 +67,7 @@ def vocab_size(texts, min_count=[1,2,3,4,5], visualise=False, save=False):
     return sizes
 
 
-def folder_to_array(folder, notitles=False, vectorizerType="count", min_df=3, min_ngram=4):
+def folder_to_array(folder, notitles=False, vectorizerType="count", min_df=3):
     """Takes folder and returns BoWs array
     Args
     ----
@@ -82,7 +84,7 @@ def folder_to_array(folder, notitles=False, vectorizerType="count", min_df=3, mi
         BoWs array
     """
     text_list = read_txts(folder, notitles)
-    CV, BoWs = BoW(text_list, vectorizerType, min_df, min_ngram)
+    CV, BoWs = BoW(text_list, vectorizerType, min_df)
     X = BoWs.toarray()
     return CV, X, text_list
 
@@ -107,6 +109,7 @@ def dend(X, notitles=False, metric="euclidean"):
 
     Z = linkage(X, metric=metric)
 
+    plt.clf()
     den = dendrogram(Z, labels=abbrev, orientation="left")
     plt.title("Dendrogram of Antiquity Texts")
     plt.xlabel("Distance between items")
@@ -173,6 +176,43 @@ def k_clustering(X, n_clusters=8):
     return cluster_names, table_text
 
 
+def multidim(X, vectorizerType="tf", notitles=False, metric="euclidean"):
+    """Multidimensional scaling on a books x word count array
+
+    Args
+    ----
+    X: ndarray
+        The array of term frequencies or TF-IDF
+
+    Returns
+    out: ndarray
+
+    """
+    multi = MDS()
+
+    # Provides the points to plot each of the books
+    out = multi.fit_transform(X)
+
+    min_x, min_y = np.min(out, axis=0)
+    max_x, max_y = np.max(out, axis=0)
+
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    plt.ylim((min_y-0.5*min_y, max_y+0.5*max_y))
+    plt.xlim((min_x-0.5*min_x, max_x+0.5*max_x))
+
+    for i, book in enumerate(abbrev):
+        ax.annotate(book, xy=out[i])
+
+    if notitles:
+        name = "MDS_{}_notitles_{}.pdf".format(vectorizerType, metric)
+    else:
+        name = "MDS_{}_{}.pdf".format(vectorizerType, metric)
+    plt.savefig(name)
+    return out
+
+
 def most_weighted(X, CV, n=10, save=False):
     """Finds the most weighted words within an array.
 
@@ -232,10 +272,9 @@ def most_weighted(X, CV, n=10, save=False):
     return top
 
 
-def analysis(folder, notitles=False, vectorizerType="count", min_df=3, min_ngram=4,
+def analysis(folder, notitles=False, vectorizerType="count", min_df=3,
              metric="euclidean", n_clusters=8, n=10, save=False):
-    CV, X, text_list = folder_to_array(folder, notitles, vectorizerType, min_df, min_ngram)
-    vocab_size(text_list, visualise=True, save=True)
+    CV, X, text_list = folder_to_array(folder, notitles, vectorizerType, min_df)
     Z, den = dend(X, notitles, metric)
     cluster_names, table_text = k_clustering(X, n_clusters)
     top_ten_words = most_weighted(X, CV, n, save)
