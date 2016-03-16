@@ -74,6 +74,9 @@ def remove_nonwords(html_text):
     # from http://stackoverflow.com/questions/11229831/regular-expression-to-remove-html-tags-from-a-string
     repl = re.sub("<[^>]*>"," ",html_text)
 
+    # Get rid of hyphens
+    repl = re.sub("&shy;", "", repl)
+
     # Replace all whitespace
     repl = re.sub("[^A-Za-z]+", " ", repl)
 
@@ -173,4 +176,4 @@ def save_all_books(folder, output_folder, notitles=False):
     book_list = list_of_books(folder)
 
     for book in book_list:
-        read_book(book, save=True, output_folder=output_folder, notitles=titles_remove)
+        read_book(book, save=True, output_folder=output_folder, notitles=notitles)
