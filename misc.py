@@ -68,6 +68,31 @@ abbrev = ["Flavius Josephus 3",
           "Cornelius Tacitus 5", 
           "Greek and Roman\n Geography"]
 
+abb = ["FJ3",
+       "G DaF 6",
+       "CT",
+       "DaF 5",
+       "PNH",
+       "FJ1",
+       "Livy 5",
+       "CT4",
+       "FJ4",
+       "CT1",
+       "TL",
+       "G DaF 2",
+       "G DaF 4",
+       "PW 1",
+       "Livy 3",
+       "HoR3",
+       "D Greece",
+       "DaF 3",
+       "FJ2", 
+       "HoR TL 1",
+       "G DaF 1", 
+       "PW2",
+       "CT5", 
+       "Geog"]
+
 # I thought it would be interesting to create my own linkage table with what
 # should be linked (only by the titles and my knowledge of the Roman empire)
 

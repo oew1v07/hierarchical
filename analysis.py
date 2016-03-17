@@ -199,11 +199,16 @@ def multidim(X, vectorizerType="tf", notitles=False, metric="euclidean"):
     plt.clf()
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    plt.ylim((min_y-0.5*min_y, max_y+0.5*max_y))
-    plt.xlim((min_x-0.5*min_x, max_x+0.5*max_x))
+    plt.ylim((min_y-0.5, max_y+0.5))
+    plt.xlim((min_x-0.5, max_x+0.5))
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Multi-Dimensional Scaling of Antiquity Texts')
 
-    for i, book in enumerate(abbrev):
+    for i, book in enumerate(abb):
         ax.annotate(book, xy=out[i])
+    
+    plt.tight_layout()
 
     if notitles:
         name = "MDS_{}_notitles_{}.pdf".format(vectorizerType, metric)
